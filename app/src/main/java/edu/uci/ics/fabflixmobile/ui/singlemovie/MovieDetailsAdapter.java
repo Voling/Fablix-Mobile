@@ -24,7 +24,7 @@ public class MovieDetailsAdapter extends ArrayAdapter<Movie> {
     }
 
     public MovieDetailsAdapter(Context context, Movie movie) {
-        super(context, R.layout.movieDetailsPage, new ArrayList<>());
+        super(context, R.layout.movie_details_page, new ArrayList<>());
         this.movie = movie;
     }
 
@@ -35,7 +35,7 @@ public class MovieDetailsAdapter extends ArrayAdapter<Movie> {
             // If there's no view to re-use, inflate a brand new view for row
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.movieDetailsPage, parent, false);
+            convertView = inflater.inflate(R.layout.movie_details_page, parent, false);
             viewHolder.title = convertView.findViewById(R.id.title);
             viewHolder.year = convertView.findViewById(R.id.year);
             viewHolder.director = convertView.findViewById(R.id.director);

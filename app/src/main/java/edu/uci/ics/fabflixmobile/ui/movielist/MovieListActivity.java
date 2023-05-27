@@ -20,20 +20,21 @@ import edu.uci.ics.fabflixmobile.ui.singlemovie.MovieDetailsActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import android.util.Log;
 import java.util.ArrayList;
 
 public class MovieListActivity extends AppCompatActivity {
     private final String host = "10.0.2.2";
     private final String port = "8080";
-    private final String domain = "ROOT_WAR";
-    private final String baseURL = "https://" + host + ":" + port + "/" + domain;
+    private final String domain = "fablix_war";
+    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movielist);
         // TODO: this should be retrieved from the backend server
         //final ArrayList<Movie> movies = new ArrayList<>();
+        Log.d("wjbdj",baseURL + "/api/movies");
         ArrayList<Movie> movies = getMovieList();
         //movies.add(new Movie("The Terminal", (short) 2004));
         //movies.add(new Movie("The Final Season", (short) 2007));
@@ -86,7 +87,7 @@ public class MovieListActivity extends AppCompatActivity {
 
                 },
                 error -> {
-                    System.out.println("Error");
+                    Log.d("Error","error");
                 });
         queue.add(movieListRequest);
         return movieList;

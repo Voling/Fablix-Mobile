@@ -29,10 +29,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movielist);
         //final ArrayList<Movie> movies = new ArrayList<>();
-        if (getIntent().hasExtra("movie")) {
-            Movie movie = (Movie) getIntent().getSerializableExtra("movie");
-            MovieDetailsAdapter adapter = new MovieDetailsAdapter(this, movie);
-        }
+        //if (getIntent().hasExtra("movie")) {
+            //Movie movie = (Movie) getIntent().getSerializableExtra("movie");
+            //MovieDetailsAdapter adapter = new MovieDetailsAdapter(this, movie);
+        //}
 
     }
 
