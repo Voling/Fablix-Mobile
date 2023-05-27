@@ -16,6 +16,10 @@ import edu.uci.ics.fabflixmobile.R;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.data.model.Movie;
 import edu.uci.ics.fabflixmobile.ui.login.LoginActivity;
+import edu.uci.ics.fabflixmobile.ui.singlemovie.MovieDetailsActivity;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -40,23 +44,46 @@ public class MovieListActivity extends AppCompatActivity {
             Movie movie = movies.get(position);
             @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            Intent MovieListPage = new Intent(MovieListActivity.this, MovieListActivity.class);
+            Intent MovieDetailsPage = new Intent(MovieListActivity.this, MovieDetailsActivity.class);
             //go to movie page
+            MovieDetailsPage.putExtra("movie", movie);
+            startActivity(MovieDetailsPage);
         });
     }
     protected ArrayList<Movie> getMovieList() {
         ArrayList<Movie> movieList = new ArrayList<>();
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         final StringRequest movieListRequest = new StringRequest(Request.Method.GET,
+                //actually use search. we need to get query from a search page
                 baseURL + "/api/movies",
                 response -> {
-                    JSONArray jsonArray = new JSONArray(response);
-                    ArrayList<Movie> movies = new ArrayList<>();
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JsonObject jsonObject = jsonArray.getJSONObject(i);
-
-                        movieList.add(movie);
+                    try {
+                        JSONArray jsonArray = new JSONArray(response);
+                        ArrayList<Movie> movies = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            String title = jsonObject.getString("title");
+                            int year = jsonObject.getInt("year");
+                            String director = jsonObject.getString("director");
+                            JSONArray starsArray = jsonObject.getJSONArray("star");
+                            JSONArray genresArray = jsonObject.getJSONArray("genre");
+                            ArrayList<String> stars = new ArrayList<>();
+                            for (int j = 0; j < starsArray.length(); j++) {
+                                String star = starsArray.getString(j);
+                                stars.add(star);
+                            }
+                            ArrayList<String> genres = new ArrayList<>();
+                            for (int j = 0; j < genresArray.length(); j++) {
+                                String genre = genresArray.getString(j);
+                                genres.add(genre);
+                            }
+                            movieList.add(new Movie(title, year, director, genres, stars));
+                        }
                     }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                 },
                 error -> {
                     System.out.println("Error");
