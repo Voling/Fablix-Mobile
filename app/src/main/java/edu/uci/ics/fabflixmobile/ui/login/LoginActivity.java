@@ -16,6 +16,7 @@ import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
 import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.*;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -29,8 +30,8 @@ public class LoginActivity extends AppCompatActivity {
      */
     private final String host = "10.0.2.2";
     private final String port = "8080";
-    private final String domain = "ROOT_WAR";
-    private final String baseURL = "https://" + host + ":" + port + "/" + domain;
+    private final String domain = "fablix_war";
+    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
         password = binding.password;
         message = binding.message;
         final Button loginButton = binding.login;
+        Log.d("MyTag", baseURL);
+
 
         //assign a listener to call a function to handle the user request when clicking a button
         loginButton.setOnClickListener(view -> login());
@@ -52,22 +55,37 @@ public class LoginActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public void login() {
         message.setText("Trying to login");
+        Log.d("MyTag", baseURL);
         // use the same network queue across our application
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         // request type is POST
         final StringRequest loginRequest = new StringRequest(
                 Request.Method.POST,
-                baseURL + "/api/login",
+                baseURL + "/api/mobilelogin",
                 response -> {
                     // TODO: should parse the json response to redirect to appropriate functions
                     //  upon different response value.
                     Log.d("login.success", response);
-                    //Complete and destroy login activity once successful
-                    finish();
-                    // initialize the activity(page)/destination
-                    Intent MovieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
-                    // activate the list page.
-                    startActivity(MovieListPage);
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        Log.d("ksnkndw",jsonObject.getString("status"));
+                        if (jsonObject.getString("status").equals("success")){
+                            Log.d("login.success", response);
+                            //Complete and destroy login activity once successful
+                            finish();
+                            // initialize the activity(page)/destination
+                            Intent MovieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
+                            // activate the list page.
+                            startActivity(MovieListPage);
+                        }
+                        else{
+                            Log.d("login.failed", response);
+                        }
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                    }
+
                 },
                 error -> {
                     // error
@@ -77,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             protected Map<String, String> getParams() {
                 // POST request form data
                 final Map<String, String> params = new HashMap<>();
-                params.put("username", username.getText().toString());
+                params.put("email", username.getText().toString());
                 params.put("password", password.getText().toString());
                 return params;
             }
