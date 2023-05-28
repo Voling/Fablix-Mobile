@@ -56,30 +56,58 @@ public class MovieListActivity extends AppCompatActivity {
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         final StringRequest movieListRequest = new StringRequest(Request.Method.GET,
                 //actually use search. we need to get query from a search page
-                baseURL + "/api/movies",
+                baseURL + "/api/movies?page=1&pagesize=10&sort=ranking&order=DESC",
                 response -> {
                     try {
                         JSONArray jsonArray = new JSONArray(response);
-                        ArrayList<Movie> movies = new ArrayList<>();
+                        String lastmovie = "";
+                        String prevstar = "";
+                        String prevgenre = "";
+                        int length = -1;
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            String title = jsonObject.getString("title");
-                            int year = jsonObject.getInt("year");
-                            String director = jsonObject.getString("director");
-                            JSONArray starsArray = jsonObject.getJSONArray("star");
-                            JSONArray genresArray = jsonObject.getJSONArray("genre");
-                            ArrayList<String> stars = new ArrayList<>();
-                            for (int j = 0; j < starsArray.length(); j++) {
-                                String star = starsArray.getString(j);
-                                stars.add(star);
+                            if (jsonObject.getString("id") != lastmovie) {
+                                String title = jsonObject.getString("title");
+                                int year = jsonObject.getInt("year");
+                                String director = jsonObject.getString("director");
+                                ArrayList<String> starList = new ArrayList<String>();
+                                 starList.add(jsonObject.getString("star"));
+                                ArrayList<String> genreList = new ArrayList<String>();
+                                genreList.add(jsonObject.getString("genre"));
+                                movieList.add(new Movie(title, year, director, genreList, starList));
+                                // update prior
+                                lastmovie = title;
+                                prevgenre = jsonObject.getString("genre");
+                                prevstar = jsonObject.getString("star");
+                                length += 1;
                             }
-                            ArrayList<String> genres = new ArrayList<>();
-                            for (int j = 0; j < genresArray.length(); j++) {
-                                String genre = genresArray.getString(j);
-                                genres.add(genre);
+                            else{
+                                /*
+                                if (resultdata[i].genre != prevgenre) {
+                                    array[length].genres.push(resultdata[i].genre);
+                                    prevgenre = resultdata[i].genre;
+                                   }
+                                if (resultdata[i].star != prevstar) {
+                                    array[length].cast.push([resultdata[i].star, resultdata[i].starid]);
+                                    prevstar = resultdata[i].star;
+                                    //console.log(resultdata[i].starid);
+                                    }
+                                 */
+                                if(jsonObject.getString("genre") != prevgenre){
+                                    movieList.get(length).getGenres().add(jsonObject.getString("genre"));
+                                    prevgenre = jsonObject.getString("genre");
+                                }
+                                if(jsonObject.getString("star") != prevstar){
+                                    movieList.get(length).getStars().add(jsonObject.getString("star"));
+                                    prevstar = jsonObject.getString("star");
+                                }
+
+
                             }
-                            movieList.add(new Movie(title, year, director, genres, stars));
+
+
                         }
+                        Log.d("movielist",movieList.toString());
                     }
                     catch (JSONException e) {
                         e.printStackTrace();

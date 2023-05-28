@@ -8,8 +8,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import android.webkit.CookieManager;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
@@ -17,6 +20,9 @@ import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.*;
+import com.android.volley.AuthFailureError;
+import java.util.Collections;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -92,12 +98,37 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("login.error", error.toString());
                 }) {
             @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse res){
+                Map<String, String> responseHeaders = res.headers;
+                String rawCookies = responseHeaders.get("Set-Cookie");
+                String[] cookieParts = rawCookies.split("=|;");
+                String cookieName = cookieParts[0];
+                String cookieValue = cookieParts[1];
+                CookieManager.getInstance().setCookie(cookieName, cookieValue);
+                Log.d(cookieName,cookieValue);
+
+                return super.parseNetworkResponse(res);
+            }
+            @Override
             protected Map<String, String> getParams() {
                 // POST request form data
                 final Map<String, String> params = new HashMap<>();
                 params.put("email", username.getText().toString());
                 params.put("password", password.getText().toString());
                 return params;
+            }
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = super.getHeaders();
+                if (headers == null
+                        || headers.equals(Collections.emptyMap())) {
+                    headers = new HashMap<String, String>();
+                }
+                CookieManager cookieManager = CookieManager.getInstance();
+                String cookies = cookieManager.getCookie(baseURL + "/api/mobilelogin");
+                headers.put("Cookie", cookies);
+                Log.d("cookies", "cookiesareput");
+                return headers;
             }
         };
         // important: queue.add is where the login request is actually sent
