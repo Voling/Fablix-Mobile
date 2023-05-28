@@ -38,6 +38,7 @@ public class MovieListActivity extends AppCompatActivity {
     private ArrayList<Movie> movies;
     private MovieListViewAdapter movieadapter;
     private int pagenum = 1;
+    private String lastquery = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,9 +120,59 @@ public class MovieListActivity extends AppCompatActivity {
         e.printStackTrace();
     }
     }
+    protected void getlast(){
+        ArrayList<Movie> movieList = new ArrayList<>();
+        if(pagenum >=2) {
+            pagenum -= 1;
+            Log.d("wdbwjdb", baseURL + lastquery + "&page=" + pagenum);
+            final RequestQueue queue = NetworkManager.sharedManager(this).queue;
+            final StringRequest movieListRequest = new StringRequest(
+                    Request.Method.GET,
+                    baseURL + lastquery + "&page=" + pagenum,
+                    response -> {
+                        parseMovie(movieList, response);
+                        Log.d("searchedmovie", movieList.toString());
+                        movies.clear();
+                        movies.addAll(movieList);
+                        movieadapter.notifyDataSetChanged();
+                        Log.d("updatedmovies", movies.toString());
+                        // Handle response
+                    },
+                    error -> {
+                        // Handle error
+                        Log.e("Volley", "Error occurred", error);
+                    }
+            );
+            queue.add(movieListRequest);
+        }
+    }
+    protected void getnext(){
+        ArrayList<Movie> movieList = new ArrayList<>();
+        pagenum += 1;
+        Log.d("wdbwjdb",baseURL + lastquery + "&page=" + pagenum);
+        final RequestQueue queue = NetworkManager.sharedManager(this).queue;
+        final StringRequest movieListRequest = new StringRequest(
+                Request.Method.GET,
+                baseURL + lastquery + "&page=" + pagenum,
+                response -> {
+                    parseMovie(movieList,response);
+                    Log.d("searchedmovie",movieList.toString());
+                    movies.clear();
+                    movies.addAll(movieList);
+                    movieadapter.notifyDataSetChanged();
+                    Log.d("updatedmovies",movies.toString());
+                    // Handle response
+                },
+                error -> {
+                    // Handle error
+                    Log.e("Volley", "Error occurred", error);
+                }
+        );
+        queue.add(movieListRequest);
+    }
     protected void searchMovie(String query){
         ArrayList<Movie> movieList = new ArrayList<>();
-        Log.d("wdbwjdb",baseURL + "/search?page=1&pagesize=10&sort=ranking&order=DESC&title=" +query);
+        Log.d("wdbwjdb",baseURL + "/search?pagesize=10&sort=ranking&order=DESC&title=" +query + "&page=1" );
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         final StringRequest movieListRequest = new StringRequest(
                 Request.Method.GET,
@@ -129,6 +180,8 @@ public class MovieListActivity extends AppCompatActivity {
                 response -> {
                     parseMovie(movieList,response);
                     Log.d("searchedmovie",movieList.toString());
+                    lastquery = "/search?pagesize=10&sort=ranking&order=DESC&title=" +query;
+                    pagenum = 1;
                     movies.clear();
                     movies.addAll(movieList);
                     movieadapter.notifyDataSetChanged();
@@ -156,6 +209,8 @@ public class MovieListActivity extends AppCompatActivity {
                         parseMovie(movieList,response);
                         Log.d("movielist",movieList.toString());
                         movieadapter = new MovieListViewAdapter(this, movieList);
+                        lastquery = "/api/movies?pagesize=10&sort=ranking&order=DESC";
+                        pagenum = 1;
                         ListView listView = findViewById(R.id.list);
                         listView.setAdapter(movieadapter);
                         listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -203,6 +258,17 @@ public class MovieListActivity extends AppCompatActivity {
                             // Set the text in the SearchView to the current query text and submit it
                             searchView.setQuery(queryText, true);
                         });
+                        Button nextButton = findViewById(R.id.nextButton);
+                        nextButton.setOnClickListener(v -> {
+                            getnext();
+
+                        });
+                        Button prevButton = findViewById(R.id.prevButton);
+                        prevButton.setOnClickListener(v -> {
+                            getlast();
+
+                        });
+
 
                     }
                     catch (Exception e) {
