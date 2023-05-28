@@ -2,13 +2,15 @@ package edu.uci.ics.fabflixmobile.ui.movielist;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.view.LayoutInflater;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import android.widget.Button;
 
 import android.os.Bundle;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -22,6 +24,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import android.util.Log;
 import java.util.ArrayList;
+import android.view.View;
+import androidx.appcompat.widget.SearchView;
+import edu.uci.ics.fabflixmobile.R;
+import android.content.Context;
 
 public class MovieListActivity extends AppCompatActivity {
     private final String host = "10.0.2.2";
@@ -125,6 +131,31 @@ public class MovieListActivity extends AppCompatActivity {
                             MovieDetailsPage.putExtra("movie", movie);
                             startActivity(MovieDetailsPage);
                         });
+                        SearchView searchView = findViewById(R.id.searchBar);
+                        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextSubmit(String query) {
+                                // Handle the search query here
+                                Log.d("Usersubmit", query);
+                                return true;
+                            }
+                            @Override
+                            public boolean onQueryTextChange(String query) {
+                                Log.d("UserInput", query);
+                                return true;
+                            }
+                        });
+                        Button searchButton = findViewById(R.id.searchButton);
+
+                        // Set the listener
+                        searchButton.setOnClickListener(v -> {
+                            // Get the current query text
+                            String queryText = searchView.getQuery().toString();
+
+                            // Set the text in the SearchView to the current query text and submit it
+                            searchView.setQuery(queryText, true);
+                        });
+
                     }
                     catch (JSONException e) {
                         e.printStackTrace();
