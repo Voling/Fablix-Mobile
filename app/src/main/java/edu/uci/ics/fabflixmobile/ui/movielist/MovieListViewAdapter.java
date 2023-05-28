@@ -4,7 +4,7 @@ import android.util.Log;
 import androidx.appcompat.widget.SearchView;
 import edu.uci.ics.fabflixmobile.R;
 import edu.uci.ics.fabflixmobile.data.model.Movie;
-
+import edu.uci.ics.fabflixmobile.data.model.Movie;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -21,12 +21,33 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
     // View lookup cache
     private static class ViewHolder {
         TextView title;
-        TextView subtitle;
+        TextView year;
+
+        TextView director;
+
+        TextView stars;
+
+        TextView genres;
+
     }
 
     public MovieListViewAdapter(Context context, ArrayList<Movie> movies) {
         super(context, R.layout.movielist_row, movies);
         this.movies = movies;
+    }
+    public String listtostring(ArrayList<String> movies1){
+        String thelist = "";
+        int counter = 0;
+        for (String star: movies1){
+            if(counter >= 3){
+                break;
+            }
+            thelist += star + ",";
+            counter += 1;
+        }
+
+
+    return thelist;
     }
 
     @SuppressLint("SetTextI18n")
@@ -42,16 +63,13 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.movielist_row, parent, false);
             viewHolder.title = convertView.findViewById(R.id.title);
-            viewHolder.subtitle = convertView.findViewById(R.id.subtitle);
-            SearchView searchView = convertView.findViewById(R.id.searchBar);
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    // Handle the search query here
-                    Log.d("UserInput", query);
-                    return true;
-                }
-            });
+            viewHolder.year = convertView.findViewById(R.id.year);
+            viewHolder.director = convertView.findViewById(R.id.director);
+            viewHolder.genres = convertView.findViewById(R.id.genres);
+            viewHolder.stars = convertView.findViewById(R.id.stars);
+
+
+
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
         } else {
@@ -61,7 +79,10 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
         // Populate the data from the data object via the viewHolder object
         // into the template view.
         viewHolder.title.setText(movie.getName());
-        viewHolder.subtitle.setText(movie.getYear() + "");
+        viewHolder.year.setText(movie.getYear() + "");
+        viewHolder.director.setText("director: " + movie.getDirector());
+        viewHolder.stars.setText("cast " + listtostring(movie.getStars()));
+        viewHolder.genres.setText(listtostring(movie.getGenres()));
         // Return the completed view to render on screen
         return convertView;
     }
