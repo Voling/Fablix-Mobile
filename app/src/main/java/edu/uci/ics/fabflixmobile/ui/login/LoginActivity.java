@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     private final String host = "sendyourmoneymakeusrich.com";
     private final String port = "8443";
-    private final String domain = "fablix";
+    private final String domain = "";
     private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
     @Override

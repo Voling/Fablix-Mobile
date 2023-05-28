@@ -33,7 +33,7 @@ import android.content.Context;
 public class MovieListActivity extends AppCompatActivity {
     private final String host = "sendyourmoneymakeusrich.com";
     private final String port = "8443";
-    private final String domain = "fablix";
+    private final String domain = "";
     private final String baseURL = "https://" + host + ":" + port + "/" + domain;
     private ArrayList<Movie> movies;
     private MovieListViewAdapter movieadapter;
