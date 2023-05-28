@@ -38,6 +38,7 @@ public class MovieListActivity extends AppCompatActivity {
         ArrayList<Movie> movies = getMovieList();
         //movies.add(new Movie("The Terminal", (short) 2004));
         //movies.add(new Movie("The Final Season", (short) 2007));
+        /*
         MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
         ListView listView = findViewById(R.id.list);
         listView.setAdapter(adapter);
@@ -50,6 +51,8 @@ public class MovieListActivity extends AppCompatActivity {
             MovieDetailsPage.putExtra("movie", movie);
             startActivity(MovieDetailsPage);
         });
+
+         */
     }
     protected ArrayList<Movie> getMovieList() {
         ArrayList<Movie> movieList = new ArrayList<>();
@@ -66,8 +69,10 @@ public class MovieListActivity extends AppCompatActivity {
                         int length = -1;
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            if (jsonObject.getString("id") != lastmovie) {
+                            if (!jsonObject.getString("title").equals(lastmovie)) {
                                 String title = jsonObject.getString("title");
+                                Log.d("title",title);
+                                Log.d("lastmov",lastmovie);
                                 int year = jsonObject.getInt("year");
                                 String director = jsonObject.getString("director");
                                 ArrayList<String> starList = new ArrayList<String>();
@@ -76,7 +81,7 @@ public class MovieListActivity extends AppCompatActivity {
                                 genreList.add(jsonObject.getString("genre"));
                                 movieList.add(new Movie(title, year, director, genreList, starList));
                                 // update prior
-                                lastmovie = title;
+                                lastmovie = jsonObject.getString("title");
                                 prevgenre = jsonObject.getString("genre");
                                 prevstar = jsonObject.getString("star");
                                 length += 1;
@@ -108,6 +113,18 @@ public class MovieListActivity extends AppCompatActivity {
 
                         }
                         Log.d("movielist",movieList.toString());
+                        MovieListViewAdapter adapter = new MovieListViewAdapter(this, movieList);
+                        ListView listView = findViewById(R.id.list);
+                        listView.setAdapter(adapter);
+                        listView.setOnItemClickListener((parent, view, position, id) -> {
+                            Movie movie = movieList.get(position);
+                            @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            Intent MovieDetailsPage = new Intent(MovieListActivity.this, MovieDetailsActivity.class);
+                            //go to movie page
+                            MovieDetailsPage.putExtra("movie", movie);
+                            startActivity(MovieDetailsPage);
+                        });
                     }
                     catch (JSONException e) {
                         e.printStackTrace();
