@@ -31,10 +31,10 @@ import edu.uci.ics.fabflixmobile.R;
 import android.content.Context;
 
 public class MovieListActivity extends AppCompatActivity {
-    private final String host = "10.0.2.2";
-    private final String port = "8080";
-    private final String domain = "fablix_war";
-    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
+    private final String host = "sendyourmoneymakeusrich.com";
+    private final String port = "8443";
+    private final String domain = "";
+    private final String baseURL = "https://" + host + ":" + port + "/" + domain;
     private ArrayList<Movie> movies;
     private MovieListViewAdapter movieadapter;
     private int pagenum = 1;
