@@ -1,5 +1,7 @@
 package edu.uci.ics.fabflixmobile.ui.movielist;
 
+import android.util.Log;
+import androidx.appcompat.widget.SearchView;
 import edu.uci.ics.fabflixmobile.R;
 import edu.uci.ics.fabflixmobile.data.model.Movie;
 
@@ -41,6 +43,15 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
             convertView = inflater.inflate(R.layout.movielist_row, parent, false);
             viewHolder.title = convertView.findViewById(R.id.title);
             viewHolder.subtitle = convertView.findViewById(R.id.subtitle);
+            SearchView searchView = convertView.findViewById(R.id.searchBar);
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    // Handle the search query here
+                    Log.d("UserInput", query);
+                    return true;
+                }
+            });
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
         } else {
