@@ -14,6 +14,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
+
+import edu.uci.ics.fabflixmobile.R;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
 import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
@@ -86,6 +88,10 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         else{
                             Log.d("login.failed", response);
+                            //show error messages
+                            TextView tv = findViewById(R.id.message);
+                            tv.setText("incorrect credential");
+
                         }
                     }
                     catch(Exception e){
@@ -96,17 +102,23 @@ public class LoginActivity extends AppCompatActivity {
                 error -> {
                     // error
                     Log.d("login.error", error.toString());
+                    TextView tv = findViewById(R.id.message);
+                    tv.setText("incorrect credential");
+                    tv.setVisibility(TextView.VISIBLE);
                 }) {
             @Override
             protected Response<String> parseNetworkResponse(NetworkResponse res){
                 Map<String, String> responseHeaders = res.headers;
+
                 String rawCookies = responseHeaders.get("Set-Cookie");
+                if (rawCookies != null) {
                 String[] cookieParts = rawCookies.split("=|;");
                 String cookieName = cookieParts[0];
                 String cookieValue = cookieParts[1];
-                CookieManager.getInstance().setCookie(cookieName, cookieValue);
-                Log.d(cookieName,cookieValue);
 
+                    CookieManager.getInstance().setCookie(cookieName, cookieValue);
+                    Log.d(cookieName, cookieValue);
+                }
                 return super.parseNetworkResponse(res);
             }
             @Override
