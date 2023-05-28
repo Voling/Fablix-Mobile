@@ -2,7 +2,11 @@ package edu.uci.ics.fabflixmobile.ui.singlemovie;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,12 +31,40 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movielist);
-        //final ArrayList<Movie> movies = new ArrayList<>();
-        //if (getIntent().hasExtra("movie")) {
-            //Movie movie = (Movie) getIntent().getSerializableExtra("movie");
-            //MovieDetailsAdapter adapter = new MovieDetailsAdapter(this, movie);
-        //}
+        setContentView(R.layout.movie_details_page);
+
+        if (getIntent().hasExtra("movie")) {
+            Movie movie = (Movie) getIntent().getSerializableExtra("movie");
+            Log.d("MovieDetailsPage", movie.getName());
+
+            TextView titleTextView = findViewById(R.id.title);
+            TextView yearTextView = findViewById(R.id.year);
+            TextView directorTextView = findViewById(R.id.director);
+            TextView genresTextView = findViewById(R.id.genres);
+            TextView starsTextView = findViewById(R.id.stars);
+
+            titleTextView.setText(movie.getName());
+            yearTextView.setText(String.valueOf(movie.getYear()));
+            directorTextView.setText(movie.getDirector());
+
+            StringBuilder allGenres = new StringBuilder();
+            for (String i : movie.getGenres()) {
+                allGenres.append(i).append(", ");
+            }
+            genresTextView.setText(String.valueOf(allGenres));
+
+            StringBuilder allStars = new StringBuilder();
+            for (String i : movie.getStars()) {
+                allStars.append(i).append(", ");
+            }
+            starsTextView.setText(String.valueOf(allStars));
+        }
+        Button backButton = findViewById(R.id.prevButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
     }
 
